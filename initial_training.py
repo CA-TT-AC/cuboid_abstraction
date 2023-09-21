@@ -16,10 +16,10 @@ tf.app.flags.DEFINE_string('log_dir', 'log/initial_training/PGen_xxxx/0_16_8_4_a
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_string('train_data', 
-                           'data/airplane_octree_points_d5_train.tfrecords',
+                           'data/airplane_octree_points_d5_train_100.tfrecords',
                            """Train data location.""")
 tf.app.flags.DEFINE_string('test_data', 
-                           'data/airplane_octree_points_d5_test_100.tfrecords',
+                           'data/airplane_octree_points_d5_test.tfrecords',
                            """Test data location.""")
 tf.app.flags.DEFINE_integer('train_batch_size', 32,
                             """Mini-batch size for the training.""")
@@ -33,7 +33,8 @@ tf.app.flags.DEFINE_integer('test_every_n_steps', 1000,
                             """Test model every n training steps.""")
 tf.app.flags.DEFINE_integer('test_iter', 100,
                             """Test steps in testing phase.""")
-tf.app.flags.DEFINE_integer('disp_every_n_steps', 5000,
+# 5000 originaly
+tf.app.flags.DEFINE_integer('disp_every_n_steps', 50000,
                             """Generate mesh every n training steps.""")
 tf.app.flags.DEFINE_integer('n_part_1', 16,
                             """Number of cuboids to generate.""")

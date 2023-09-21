@@ -49,8 +49,8 @@ def run_training_pipeline(category, gpu):
   n_part_1 = shape_count[category]['n_part']*4
   n_part_2 = shape_count[category]['n_part']*2
   n_part_3 = shape_count[category]['n_part']*1
-  train_data = os.path.join('data', '{}_octree_points_d5_train.tfrecords'.format(category))
-  test_data = os.path.join('data', '{}_octree_points_d5_test_100.tfrecords'.format(category))
+  train_data = os.path.join('data', '{}_octree_points_d5_train_100.tfrecords'.format(category))
+  test_data = os.path.join('data', '{}_octree_points_d5_test.tfrecords'.format(category))
   test_iter = 100
   if category == 'animal':
     train_data = os.path.join('data', 'augment_{}_octree_points_d5.tfrecords'.format(category))

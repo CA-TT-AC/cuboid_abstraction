@@ -7,7 +7,7 @@ find_package(CUDA REQUIRED)
 include_directories($ENV{TF_INC})
 include_directories($ENV{TF_INC}/external/nsync/public)
 include_directories("/usr/local")
-
+include_directories("/home/xujing/miniconda3/envs/tf/lib/python3.6/site-packages/tensorflow/include")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")

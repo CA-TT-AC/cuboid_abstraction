@@ -1,0 +1,6 @@
+/log
+/obj
+/dump
+/data
+__pycache__
+/cext
