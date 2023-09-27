@@ -7,10 +7,8 @@ sys.path.append('util')
 import vis_primitive
 import vis_pointcloud
 
-# from data_loader_shapenet import *
-# from encoder_shapenet import *
-from data_loader import *
-from encoder import *
+from data_loader_shapenet import *
+from encoder_shapenet import *
 
 from decoder import *
 from loss_function import *
@@ -20,17 +18,11 @@ tf.app.flags.DEFINE_string('log_dir', 'log/initial_training/PGen_xxxx/0_16_8_4_a
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
-# tf.app.flags.DEFINE_string('train_data', 
-# '/home/xujing/Desktop/cuboid_abstraction/data/cupboard.tfrecords',
-#                            """Train data location.""")
-# tf.app.flags.DEFINE_string('test_data', 
-# '/home/xujing/Desktop/cuboid_abstraction/data/cupboard.tfrecords',
-#                            """Test data location.""")
 tf.app.flags.DEFINE_string('train_data', 
-                           'data/airplane_octree_points_d5_train_100.tfrecords',
+'/home/xujing/Desktop/cuboid_abstraction/data/cupboard_onlypcd.tfrecords',
                            """Train data location.""")
 tf.app.flags.DEFINE_string('test_data', 
-                           'data/airplane_octree_points_d5_test.tfrecords',
+'/home/xujing/Desktop/cuboid_abstraction/data/cupboard_onlypcd.tfrecords',
                            """Test data location.""")
 
 tf.app.flags.DEFINE_integer('train_batch_size', 32,
@@ -175,23 +167,17 @@ def initial_loss_function(cube_params_1, cube_params_2, cube_params_3,
 
 
 def train_network():
-  print('bs1:', FLAGS.train_batch_size)
-  data, octree, node_position = data_loader(FLAGS.train_data,
-      FLAGS.train_batch_size, n_points)
-  # with tf.Session() as sess:
-  #   coord = tf.train.Coordinator()
-  #   thread = tf.train.start_queue_runners(sess, coord)
-  # # sess = tf.Session()
-  #   print('octree:', sess.run(octree).shape)
-  #   print('data:', sess.run(data).shape)
-  latent_code = encoder(data, octree, is_training=True, reuse=False)
+  [points, node_position] = data_loader(FLAGS.train_data,
+    FLAGS.train_batch_size)
   with tf.Session() as sess:
     tf.global_variables_initializer().run()
     coord = tf.train.Coordinator()
     thread = tf.train.start_queue_runners(sess, coord)
-    print('octree:', sess.run(octree).shape)
-    print('data:', sess.run(data).shape)
-    print('latent:', sess.run(latent_code).shape)
+    print('points:', sess.run(points).shape)
+    # print('data:', sess.run(data).shape)
+    # print('latent:', sess.run(latent_code).shape)
+  latent_code = encoder(points, is_training=True, reuse=False)
+  
   cube_params_1 = decoder(latent_code, n_part_1, shape_bias_1,
       name='decoder_phase_one', is_training=True, reuse=False)
   cube_params_2 = decoder(latent_code, n_part_2, shape_bias_2,
@@ -292,19 +278,9 @@ def train_network():
 
 
 def test_network():
-  data, octree, node_position = data_loader(FLAGS.test_data,
+  points, node_position = data_loader(FLAGS.test_data,
       FLAGS.test_batch_size, n_points, test=True)
-
-  
-  latent_code = encoder(data, octree, is_training=False, reuse=True)
-  with tf.Session() as sess:
-    tf.global_variables_initializer().run()
-    coord = tf.train.Coordinator()
-    thread = tf.train.start_queue_runners(sess, coord)
-    print('octree:', sess.run(octree).shape)
-    print('data:', sess.run(data).shape)
-    print('latent:', sess.run(latent_code).shape)
-    # exit()
+  latent_code = encoder(points, is_training=False, reuse=True)
   cube_params_1 = decoder(latent_code, n_part_1, shape_bias_1,
       name='decoder_phase_one', is_training=False, reuse=True)
   cube_params_2 = decoder(latent_code, n_part_2, shape_bias_2,
@@ -325,7 +301,6 @@ def test_network():
     summary_test_loss = tf.summary.scalar('test_loss',
         average_test_loss)
     test_merged = tf.summary.merge([summary_test_loss])
-
   return_list = [test_merged,
       average_test_loss, test_loss,
       node_position,
@@ -336,6 +311,7 @@ def test_network():
 
 def main(argv=None):
   train_summary, solver = train_network()
+
   [test_summary,
       average_test_loss, test_loss,
       test_node_position,

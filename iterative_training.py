@@ -466,6 +466,7 @@ def main(argv=None):
       mask_1, mask_2, mask_3] = test_network()
 
   # checkpoint
+  print(FLAGS.ckpt)
   assert(os.path.exists(FLAGS.ckpt))
   ckpt = tf.train.latest_checkpoint(FLAGS.ckpt)
   start_iters = 0
@@ -506,9 +507,9 @@ def main(argv=None):
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord)
 
-    dump_dir = os.path.join('dump', FLAGS.cache_folder)
+    dump_dir = os.path.join('/mnt/JuliansHDD/xuj/capboard/', 'dump', FLAGS.cache_folder)
     if not os.path.exists(dump_dir): os.makedirs(dump_dir)
-    obj_dir = os.path.join('obj', FLAGS.cache_folder)
+    obj_dir = os.path.join('/mnt/JuliansHDD/xuj/capboard/', 'obj', FLAGS.cache_folder)
     if not os.path.exists(obj_dir): os.makedirs(obj_dir)
 
     if FLAGS.test:

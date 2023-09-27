@@ -23,6 +23,11 @@ shape_count = {
     'train': 122*20, # random duplication 20 times
     'test': 122,
     'n_part': 5
+  },
+  'cupboard':{
+    'train': 452,
+    'test': 452,
+    'n_part': 6,
   }
 }
 
@@ -49,8 +54,10 @@ def run_training_pipeline(category, gpu):
   n_part_1 = shape_count[category]['n_part']*4
   n_part_2 = shape_count[category]['n_part']*2
   n_part_3 = shape_count[category]['n_part']*1
-  train_data = os.path.join('data', '{}_octree_points_d5_train_100.tfrecords'.format(category))
-  test_data = os.path.join('data', '{}_octree_points_d5_test.tfrecords'.format(category))
+  # train_data = os.path.join('data', '{}_octree_points_d5_train_100.tfrecords'.format(category))
+  # test_data = os.path.join('data', '{}_octree_points_d5_test.tfrecords'.format(category))
+  # train_data = '/home/xujing/Desktop/cuboid_abstraction/data/cupboard.tfrecords'
+  # test_data = '/home/xujing/Desktop/cuboid_abstraction/data/cupboard.tfrecords'
   test_iter = 100
   if category == 'animal':
     train_data = os.path.join('data', 'augment_{}_octree_points_d5.tfrecords'.format(category))
@@ -59,28 +66,29 @@ def run_training_pipeline(category, gpu):
 
 
   ## initial training stage ----------------------------------------------------
-  log_folder = 'log/{}_{}_{}_{}/initial_training'.format(category, n_part_1, n_part_2, n_part_3)
+  log_folder = '/mnt/JuliansHDD/xuj/capboard/log/{}_{}_{}_{}/initial_training'.format(category, n_part_1, n_part_2, n_part_3)
   if not os.path.exists(log_folder): os.makedirs(log_folder);
   os.system('python initial_training.py --log_dir {} --train_data {} --test_data {} --max_iter {} --test_iter {} --n_part_1 {} --n_part_2 {} --n_part_3 {} --coverage_weight {} --consistency_weight {} --mutex_weight {} --aligning_weight {} --symmetry_weight {} --area_average_weight {} --cache_folder {} --gpu {} > {} 2>&1'.format(log_folder, train_data, test_data, initial_training_iter, test_iter, n_part_1, n_part_2, n_part_3, coverage_weight, consistency_weight, mutex_weight, aligning_weight, symmetry_weight, area_average_weight, 'test_{}_initial'.format(category), gpu, os.path.join(log_folder, 'initial_training_{}.log'.format(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')))))
   former_log_folder = log_folder
+  # former_log_folder = '/home/xujing/Desktop/cuboid_abstraction/log/initial_training/PGen_xxxx/0_16_8_4_airplane_0'
   ## ---------------------------------------------------------------------------
 
   ## iterative training stage --------------------------------------------------
   for i in range(iterative_round):
     global selected_tree_weight
     # mask predict
-    log_folder = 'log/{}_{}_{}_{}/iterative_training/mask_predict_{}'.format(category, n_part_1, n_part_2, n_part_3, i)
+    log_folder = '/mnt/JuliansHDD/xuj/capboard/log/{}_{}_{}_{}/iterative_training/mask_predict_{}'.format(category, n_part_1, n_part_2, n_part_3, i)
     if not os.path.exists(log_folder): os.makedirs(log_folder);
     os.system('python iterative_training.py --log_dir {} --train_data {} --test_data {} --max_iter {} --test_iter {} --n_part_1 {} --n_part_2 {} --n_part_3 {} --sparseness_weight {} --completeness_weight {} --similarity_weight {} --cache_folder {} --ckpt {} --stage mask_predict --gpu {} > {} 2>&1'.format(log_folder, train_data, test_data, iterative_training_iter, test_iter, n_part_1, n_part_2, n_part_3, sparseness_weight, completeness_weight, similarity_weight, 'test_{}_iterative_mask_{}'.format(category, i), os.path.join(former_log_folder, 'model'), gpu, os.path.join(log_folder, 'iterative_training_mask_{}_{}.log'.format(i, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')))))
     former_log_folder = log_folder
     # cube update
-    log_folder = 'log/{}_{}_{}_{}/iterative_training/cube_update_{}'.format(category, n_part_1, n_part_2, n_part_3, i)
+    log_folder = '/mnt/JuliansHDD/xuj/capboard/log/{}_{}_{}_{}/iterative_training/cube_update_{}'.format(category, n_part_1, n_part_2, n_part_3, i)
     if not os.path.exists(log_folder): os.makedirs(log_folder);
     os.system('python iterative_training.py --log_dir {} --train_data {} --test_data {} --max_iter {} --test_iter {} --n_part_1 {} --n_part_2 {} --n_part_3 {} --selected_tree_weight {} --cache_folder {} --ckpt {} --stage cube_update --gpu {} > {} 2>&1'.format(log_folder, train_data, test_data, iterative_training_iter, test_iter, n_part_1, n_part_2, n_part_3, selected_tree_weight, 'test_{}_iterative_update_{}'.format(category, i), os.path.join(former_log_folder, 'model'), gpu, os.path.join(log_folder, 'iterative_training_update_{}_{}.log'.format(i, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')))))
     former_log_folder = log_folder
     selected_tree_weight *= 2
   # finetune
-  log_folder = 'log/{}_{}_{}_{}/iterative_training/finutune'.format(category, n_part_1, n_part_2, n_part_3)
+  log_folder = '/mnt/JuliansHDD/xuj/capboard/log/{}_{}_{}_{}/iterative_training/finutune'.format(category, n_part_1, n_part_2, n_part_3)
   if not os.path.exists(log_folder): os.makedirs(log_folder);
   os.system('python iterative_training.py --log_dir {} --train_data {} --test_data {} --learning_rate {} --max_iter {} --test_iter {} --n_part_1 {} --n_part_2 {} --n_part_3 {} --coverage_weight {} --consistency_weight {} --mutex_weight {} --aligning_weight {} --symmetry_weight {} --area_average_weight {} --selected_tree_weight {} --mask_weight {} --cache_folder {} --ckpt {} --stage finetune --gpu {} > {} 2>&1'.format(log_folder, train_data, test_data, 0.00001, iterative_training_iter, test_iter, n_part_1, n_part_2, n_part_3, coverage_weight, consistency_weight, mutex_weight, aligning_weight, symmetry_weight, area_average_weight, selected_tree_weight/2, mask_weight, 'test_{}_iterative_finetune'.format(category), os.path.join(former_log_folder, 'model'), gpu, os.path.join(log_folder, 'iterative_training_finetune_{}_{}.log'.format(i, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')))))  ## ---------------------------------------------------------------------------
 

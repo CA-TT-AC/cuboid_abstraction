@@ -67,7 +67,7 @@ def encoder(data, octree, is_training=True, reuse=None):
     # [1, C, BS, 1] --> [BS, C, 1, 1] --> [BS, C]
     conv5 = tf.transpose(conv5, perm=[2, 1, 0, 3])
     conv5 = tf.squeeze(conv5, [2, 3])
-
+    print(conv5.shape)
     # latent code
     with tf.variable_scope('latent_code'):
       latent_code = tf.layers.dense(conv5, 128, activation=tf.nn.tanh,

@@ -43,5 +43,10 @@ def decoder(latent_code, n_part, shape_bias, name='decoder', is_training=True,
           kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
           bias_initializer=tf.zeros_initializer(), trainable=is_training)
       t = tf.nn.tanh(t)*0.5  # t \in [-0.5, 0.5]
-
+  with tf.Session() as sess:
+    tf.global_variables_initializer().run()
+    coord = tf.train.Coordinator()
+    thread = tf.train.start_queue_runners(sess, coord)
+    # print('points:', sess.run(points).shape)
+    print(sess.run(z).shape)
   return z, q, t
