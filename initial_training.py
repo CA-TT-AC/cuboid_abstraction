@@ -33,7 +33,7 @@ tf.app.flags.DEFINE_string('test_data',
                            'data/airplane_octree_points_d5_test.tfrecords',
                            """Test data location.""")
 
-tf.app.flags.DEFINE_integer('train_batch_size', 32,
+tf.app.flags.DEFINE_integer('train_batch_size', 64,
                             """Mini-batch size for the training.""")
 tf.app.flags.DEFINE_integer('test_batch_size', 1,
                             """Mini-batch size for the testing.""")
@@ -175,15 +175,8 @@ def initial_loss_function(cube_params_1, cube_params_2, cube_params_3,
 
 
 def train_network():
-  print('bs1:', FLAGS.train_batch_size)
   data, octree, node_position = data_loader(FLAGS.train_data,
       FLAGS.train_batch_size, n_points)
-  # with tf.Session() as sess:
-  #   coord = tf.train.Coordinator()
-  #   thread = tf.train.start_queue_runners(sess, coord)
-  # # sess = tf.Session()
-  #   print('octree:', sess.run(octree).shape)
-  #   print('data:', sess.run(data).shape)
   latent_code = encoder(data, octree, is_training=True, reuse=False)
   with tf.Session() as sess:
     tf.global_variables_initializer().run()

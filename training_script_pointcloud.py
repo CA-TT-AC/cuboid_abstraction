@@ -24,7 +24,7 @@ shape_count = {
     'n_part': 5
   },
   'cupboard':{
-    'train': 452,
+    'train': 452*5,
     'test': 452,
     'n_part': 6,
   }

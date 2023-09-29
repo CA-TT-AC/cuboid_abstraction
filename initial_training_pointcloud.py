@@ -25,7 +25,7 @@ tf.app.flags.DEFINE_string('test_data',
 '/home/xujing/Desktop/cuboid_abstraction/data/cupboard_onlypcd.tfrecords',
                            """Test data location.""")
 
-tf.app.flags.DEFINE_integer('train_batch_size', 32,
+tf.app.flags.DEFINE_integer('train_batch_size', 4,
                             """Mini-batch size for the training.""")
 tf.app.flags.DEFINE_integer('test_batch_size', 1,
                             """Mini-batch size for the testing.""")
@@ -170,15 +170,17 @@ def initial_loss_function(cube_params_1, cube_params_2, cube_params_3,
 def train_network():
   [points, node_position] = data_loader(FLAGS.train_data,
     FLAGS.train_batch_size)
+  latent_code = encoder(points, is_training=True, reuse=False)
   with tf.Session() as sess:
     tf.global_variables_initializer().run()
     coord = tf.train.Coordinator()
     thread = tf.train.start_queue_runners(sess, coord)
     print('points:', sess.run(points).shape)
+    # 32 5000 3
     print('node_pos:', sess.run(node_position).shape)
-    # print('latent:', sess.run(latent_code).shape)
-  latent_code = encoder(points, is_training=True, reuse=False)
-  
+    # 4 160000
+    print('latent:', sess.run(latent_code).shape)
+    # 32 128
   cube_params_1 = decoder(latent_code, n_part_1, shape_bias_1,
       name='decoder_phase_one', is_training=True, reuse=False)
   cube_params_2 = decoder(latent_code, n_part_2, shape_bias_2,

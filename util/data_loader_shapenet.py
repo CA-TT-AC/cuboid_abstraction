@@ -35,6 +35,6 @@ def data_loader(dataset, batch_size, n_points=5000, test=False):
   with tf.name_scope('read_and_decode'):
     filename_queue = tf.train.string_input_producer([dataset])
     points = read_and_decode(filename_queue, batch_size, n_points, test)
-    node_position = primitive_points_suffix_index(tf.reshape(tf.transpose(points, [0, 2, 1]), shape=[batch_size, -1]))
+    node_position = primitive_points_suffix_index(tf.reshape(tf.transpose(points, [0, 2, 1]), [batch_size, -1]))
     # node_position = points
   return points, node_position
