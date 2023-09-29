@@ -191,6 +191,7 @@ def train_network():
     thread = tf.train.start_queue_runners(sess, coord)
     print('octree:', sess.run(octree).shape)
     print('data:', sess.run(data).shape)
+    print('node_pos:', sess.run(node_position).shape)
     print('latent:', sess.run(latent_code).shape)
   cube_params_1 = decoder(latent_code, n_part_1, shape_bias_1,
       name='decoder_phase_one', is_training=True, reuse=False)
@@ -303,6 +304,7 @@ def test_network():
     thread = tf.train.start_queue_runners(sess, coord)
     print('octree:', sess.run(octree).shape)
     print('data:', sess.run(data).shape)
+    print('node_pos:', sess.run(node_position).shape)
     print('latent:', sess.run(latent_code).shape)
     # exit()
   cube_params_1 = decoder(latent_code, n_part_1, shape_bias_1,

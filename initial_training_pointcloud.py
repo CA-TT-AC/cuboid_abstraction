@@ -14,7 +14,7 @@ from decoder import *
 from loss_function import *
 
 
-tf.app.flags.DEFINE_string('log_dir', 'log/initial_training/PGen_xxxx/0_16_8_4_airplane_0',
+tf.app.flags.DEFINE_string('log_dir', 'log/initial_training/PGen_xxxx/0_16_8_4_cupboard_0',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
@@ -33,7 +33,8 @@ tf.app.flags.DEFINE_float('learning_rate', 0.001,
                           """Initial learning rate.""")
 tf.app.flags.DEFINE_integer('max_iter', 100010,
                             """Maximum training iterations.""")
-tf.app.flags.DEFINE_integer('test_every_n_steps', 1000,
+# 1000 originaly
+tf.app.flags.DEFINE_integer('test_every_n_steps', 2000,
                             """Test model every n training steps.""")
 tf.app.flags.DEFINE_integer('test_iter', 100,
                             """Test steps in testing phase.""")
@@ -174,7 +175,7 @@ def train_network():
     coord = tf.train.Coordinator()
     thread = tf.train.start_queue_runners(sess, coord)
     print('points:', sess.run(points).shape)
-    # print('data:', sess.run(data).shape)
+    print('node_pos:', sess.run(node_position).shape)
     # print('latent:', sess.run(latent_code).shape)
   latent_code = encoder(points, is_training=True, reuse=False)
   
@@ -354,9 +355,9 @@ def main(argv=None):
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord)
 
-    dump_dir = os.path.join('/mnt/JuliansHDD/xuj/capboard/', 'dump', FLAGS.cache_folder)
+    dump_dir = os.path.join('/mnt/JuliansHDD/xuj/', 'dump', FLAGS.cache_folder)
     if not os.path.exists(dump_dir): os.makedirs(dump_dir)
-    obj_dir = os.path.join('/mnt/JuliansHDD/xuj/capboard/', 'obj', FLAGS.cache_folder)
+    obj_dir = os.path.join('/mnt/JuliansHDD/xuj/', 'obj', FLAGS.cache_folder)
     if not os.path.exists(obj_dir): os.makedirs(obj_dir)
 
     if FLAGS.test:

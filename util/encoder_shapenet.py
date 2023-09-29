@@ -1,7 +1,3 @@
-import sys
-import tensorflow as tf
-
-# this is point cloud encoder
 import sys  
 import tensorflow as tf  
   
@@ -14,6 +10,7 @@ def encoder(data, is_training=True, reuse=None):
     with tf.variable_scope('encoder', reuse=reuse):  
         # Input transformation network  
         with tf.variable_scope('input_transform'):  
+            data.set_shape([None, None, 3])  
             input_transform = tf.layers.conv1d(data, 64, kernel_size=1,  
                                                strides=1, activation=tf.nn.relu,  
                                                use_bias=True,  
